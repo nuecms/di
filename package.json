@@ -13,8 +13,8 @@
   "type": "module",
   "scripts": {
     "prepush": "pnpm run eslint && pnpm run test",
-    "build": "tsc --watch",
     "dev": "vite build --watch",
+    "build": "vite build",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
     "test": "vitest --ui --api.port 3000",
