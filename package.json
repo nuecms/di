@@ -22,7 +22,6 @@
     "test:coverage": "vitest --coverage",
     "format": "prettier --write .",
     "prepare": "husky install",
-    "clean": "rm -rf dist",
     "release": "release-it",
     "prepublishOnly": "pnpm run build",
     "npm:pub": "pnpm publish --access public"
