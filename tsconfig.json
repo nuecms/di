@@ -1,0 +1,36 @@
+{
+
+  "compileOnSave": false,
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "declaration": true,
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // "skipLibCheck": true,
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "paths": {
+      "@di": ["di/index"], // Resolves '@di' to 'src/di/index.ts'
+      "@core": ["core/index"], // Adjust as necessary for '@core'
+      "@openapi": ["openapi/index"], // Adjust as necessary for '@openapi'
+      "@core/*": ["core/*"] // Allows '@core/*' to resolve to 'src/core/*'
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "pretty": true,
+    "types": [
+    ]
+  },
+  "include": [
+    "./src"
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "name": "@nuecms/di",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "a lightweight Node.js application with a custom Dependency Injection (DI) framework, route decorators, and Swagger/OpenAPI integration for API documentation",
+  "author": "Terry Cai",
+  "keywords": [
+    "nodejs",
+    "express",
+    "node decorators",
+    "typescript"
+  ],
+  "type": "module",
+  "scripts": {
+    "prepush": "pnpm run eslint && pnpm run test",
+    "build": "tsc --watch",
+    "dev": "vite build --watch",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint --fix src/**/*.ts",
+    "test": "vitest --ui --api.port 3000",
+    "tesx": "tsx watch example/index.ts",
+    "test:coverage": "vitest --coverage",
+    "format": "prettier --write .",
+    "prepare": "husky install",
+    "clean": "rm -rf dist",
+    "release": "release-it",
+    "prepublishOnly": "pnpm run build",
+    "npm:pub": "pnpm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuecms/di.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nuecms/di/issues"
+  },
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@types/express": "5.0.0",
+    "@types/node": "^22.10.2",
+    "@types/swagger-ui-dist": "^3.30.5",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vitest/ui": "2.1.8",
+    "body-parser": "^1.20.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsdoc": "^50.6.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "express": "^4.21.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
+    "openapi-types": "^12.1.3",
+    "prettier": "^3.4.2",
+    "reflect-metadata": "^0.2.2",
+    "release-it": "^17.10.0",
+    "swagger-ui-dist": "^5.18.2",
+    "swagger-ui-express": "^5.0.1",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0",
+    "vite-plugin-tsc-watch": "^3.0.2",
+    "vite-ts-decorators": "^1.0.1",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "body-parser": "^1.20.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "express": "^4.18.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "es5",
+    "printWidth": 80
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "tagName": "v${version}",
+      "commitMessage": "chore(release): v${version}",
+      "requireCleanWorkingDir": true,
+      "requireUpstream": false
+    },
+    "npm": {
+      "publish": false
+    }
+  }
+}
