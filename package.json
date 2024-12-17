@@ -33,6 +33,13 @@
   "bugs": {
     "url": "https://github.com/nuecms/di/issues"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
