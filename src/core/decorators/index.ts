@@ -1,3 +1,3 @@
 export * from './controller';
-export * from './route';
-export * from './params';
+export * from './module';
+export * from './pipe';

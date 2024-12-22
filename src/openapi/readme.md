@@ -54,6 +54,7 @@ Defines a schema on the openapi document
 
 #### Class Decorators
 
+
 ```ts
 @WithDefinitions(options: WithDefinitionsOpts)
 ```
@@ -71,6 +72,8 @@ Enables openapi definitions for a controller class (using `@Controller()` from `
 | options.basePath | `string` |  | The base path for all routes on the controller |
 
 <hr>
+
+
 
 ```ts
 @Schema(name?: string)

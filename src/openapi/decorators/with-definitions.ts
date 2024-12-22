@@ -1,4 +1,4 @@
-import { getMeta } from '@core/meta';
+import { getMeta } from '../../core/meta';
 import { getOpenApiDoc } from '../helpers';
 import { getOpenApiMeta } from '../meta';
 import {
@@ -16,6 +16,20 @@ type WithDefinitionsOpts = {
   basePath: string;
 };
 
+export function CTags(tag: string): ClassDecorator;
+export function CTags(tags: string[]): ClassDecorator;
+export function CTags(tags: string | string[]): ClassDecorator {
+  return (target: any) => {
+    const meta = getOpenApiMeta(target.prototype);
+    Object.keys(meta).forEach((methodName) => {
+      const pathMeta = meta[methodName];
+      pathMeta.tags = Array.isArray(tags) ? tags : [tags];
+    });
+  };
+}
+
+
+// @todo bug: paths async in time of execution
 export function WithDefinitions(options: WithDefinitionsOpts): ClassDecorator {
   return (target: any) => {
     (async () => {
@@ -53,6 +67,7 @@ export function WithDefinitions(options: WithDefinitionsOpts): ClassDecorator {
           }
         );
       });
+
     })();
   };
 }

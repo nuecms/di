@@ -26,9 +26,7 @@
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "pretty": true,
-    "types": [
-    ]
+    "pretty": true
   },
   "include": [
     "./src"

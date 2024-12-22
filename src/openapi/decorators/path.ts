@@ -48,6 +48,7 @@ export function Param(
     return descriptor;
   };
 }
+export function Tags(tag: string): MethodDecorator;
 export function Tags(tag: string, ...tags: string[]): MethodDecorator {
   return basicDecoratorFactory('tags', [tag, ...(tags || [])]);
 }

@@ -15,5 +15,12 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+  },
+  resolve: {
+    alias: {
+      '@di': path.resolve(__dirname, 'src/di'), // Alias for dependency injection
+      '@core': path.resolve(__dirname, 'src/core'), // Alias for core functionality
+      '@openapi': path.resolve(__dirname, 'src/openapi'), // Alias for OpenAPI decorators
+    },
   }
 });

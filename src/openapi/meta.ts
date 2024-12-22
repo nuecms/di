@@ -1,11 +1,28 @@
 import { OpenApiClass, OpenApiMeta, SchemaMeta } from './types';
 
-export function getOpenApiMeta(target: OpenApiClass): OpenApiMeta {
-  target.__openapi_meta__ = target.__openapi_meta__ || {};
-  return target.__openapi_meta__;
+
+import { createMetadata } from '@core';
+
+import { SWAGGER_CONFIG_METADATA, SWAGGER_SCHEMA_METADATA,  } from './helpers/constants/constants';
+
+
+
+// get metadata and create proxy base on OpenApiMeta
+function getOpenApiProxy<T>(target: object, key: string | symbol): T {
+  // base OpenApiMeta create deep proxy
+  const proxy = createMetadata(target, key, () => ({}));
+  return proxy as T;
 }
 
-export function getSchemaMeta(target: OpenApiClass): SchemaMeta {
-  target.__openapi_schema_meta__ = target.__openapi_schema_meta__ || {};
-  return target.__openapi_schema_meta__;
+
+
+
+export function getOpenApiMeta(target: object): OpenApiMeta {
+  const methodMeta = getOpenApiProxy<OpenApiMeta>(target, SWAGGER_CONFIG_METADATA);
+  return methodMeta;
+}
+
+export function getSchemaMeta(target: object): SchemaMeta {
+  const methodMeta = getOpenApiProxy<SchemaMeta>(target, SWAGGER_SCHEMA_METADATA);
+  return methodMeta;
 }

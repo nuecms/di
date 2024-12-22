@@ -5,7 +5,7 @@ import {
   RequestHandler,
   ErrorRequestHandler,
 } from 'express';
-import { InjectionToken } from '@di';
+import { InjectionToken } from '../di';
 
 import { Container } from './container';
 import { Type } from './types';

@@ -15,13 +15,13 @@ import {
   ParameterType,
   ExpressClass,
   ParameterConfiguration,
-  ExpressMeta,
 } from './meta';
 import {
   middlewareHandler,
   errorMiddlewareHandler,
   MiddlewareFunction,
 } from './middleware';
+import { middlewareDecoratorFactory } from './helpers';
 
 /**
  * Attach controllers to express application
@@ -230,16 +230,45 @@ function getParam(source: any, paramType: string, name: string): any {
  * @param {boolean} unshift if set to false all the custom decorator middlewares will be exectuted after the middlewares attached through controller
  *
  * Note- Please use custom decorators before express method decorators Get Post etc.
+ *
+ *  @usecase
+ *  ```typescript
+    import { attachMiddleware } from "@decorators/express";
+    import {Request,Response,NextFunction} from '@decorators/express/node_modules/express';
+
+    export function Access(key: string) {
+        return attachMiddleware((req : Request,res : Response,next : NextFunction)=>{
+            if(["CAN_ACCESS_TEST","CAN_ACCESS_HOME"].includes(key)){
+              next();
+            }else{
+              res.send("ACCESS DENIED");
+            }
+        });
+      }
+    ```
+    Controller Code
+
+      ```typescript
+      @Controller("/")
+      export class MainController {
+
+          @Access("CAN_ACCESS_TEST")
+          @Get("/test")
+          getB() {
+              return "You can access the test";
+          }
+
+          @Access("CAN_ACCESS_HOME")
+          @Get("/home")
+          getB() {
+              return "You can access the home";
+          }
+      }
+
+    ```
  */
 export function attachMiddleware(
-  target: any,
-  property: string,
   middleware: MiddlewareFunction
 ) {
-  const meta: ExpressMeta = getMeta(target as ExpressClass);
-  if (meta.url !== '') {
-    meta.middleware.unshift(middleware);
-  } else if (property in meta.routes) {
-    meta.routes[property].routes[0].middleware.unshift(middleware);
-  }
+   return middlewareDecoratorFactory(middleware);
 }

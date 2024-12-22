@@ -82,7 +82,7 @@ Container.provide([
 ```
 
 #### Dependency injection
-This module supports dependency injection provided by `@decorators/di` module. For example, see the full example below.
+This module supports dependency injection provided by `@di` module. For example, see the full example below.
 
 ### Example Express Application and Controller:
 ```typescript
@@ -129,7 +129,7 @@ import {Request,Response,NextFunction} from '@nuecms/di/node_modules/express';
 
 export function Access(key: string) {
     return function (target: any,propertyKey: string,descriptor: PropertyDescriptor) {
-      attachMiddleware(target,propertyKey,(req : Request,res : Response,next : NextFunction)=>{
+      attachMiddleware(target, propertyKey, (req : Request,res : Response,next : NextFunction)=>{
             if(["CAN_ACCESS_TEST","CAN_ACCESS_HOME"].includes(key)){
               next();
             }else{

@@ -15,7 +15,7 @@ export default defineConfig({
     }),
     // tscWatch(), // Watch TypeScript files for changes
     tsconfigPaths(),
-    dts(),
+    dts({ rollupTypes: true, tsconfigPath: path.resolve(__dirname, 'tsconfig.json') }),
   ],
   ssr: {
     noExternal: true, // Prevent externalizing all dependencies
@@ -58,20 +58,20 @@ export default defineConfig({
           // 'cross-fetch': 'fetch',
           // 'ioredis': 'Redis',
         },
-        chunkFileNames: '[name].[format].js',
-        manualChunks: (id) => {
-          // Replace the `src/` part of the path with an empty string
-          // Ensure it's a valid chunk name (e.g., the relative directory or file name)
-          const relativePath = id
-            .replace(process.cwd(), '')
-            .replace('src/', '');
-          // Use the module name ex: '/di/decorators/injectable.ts'  to 'di/decorators/injectable'
-          const chunkName = relativePath
-            .replace(/^\//, '')
-            .replace('.ts', '')
-            .replace('.js', '');
-          return chunkName;
-        },
+        // chunkFileNames: '[name].[format].js',
+        // manualChunks: (id) => {
+        //   // Replace the `src/` part of the path with an empty string
+        //   // Ensure it's a valid chunk name (e.g., the relative directory or file name)
+        //   const relativePath = id
+        //     .replace(process.cwd(), '')
+        //     .replace('src/', '');
+        //   // Use the module name ex: '/di/decorators/injectable.ts'  to 'di/decorators/injectable'
+        //   const chunkName = relativePath
+        //     .replace(/^\//, '')
+        //     .replace('.ts', '')
+        //     .replace('.js', '');
+        //   return chunkName;
+        // },
       },
     },
     sourcemap: false, // Disable source maps

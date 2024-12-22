@@ -7,6 +7,16 @@ settings:
 importers:
 
   .:
+    dependencies:
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      swagger-ui-dist:
+        specifier: ^5.18.2
+        version: 5.18.2
+      swagger-ui-express:
+        specifier: ^5.0.1
+        version: 5.0.1(express@4.21.2)
     devDependencies:
       '@types/express':
         specifier: 5.0.0
@@ -77,18 +87,9 @@ importers:
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
-      reflect-metadata:
-        specifier: ^0.2.2
-        version: 0.2.2
       release-it:
         specifier: ^17.10.0
         version: 17.10.0(typescript@5.7.2)
-      swagger-ui-dist:
-        specifier: ^5.18.2
-        version: 5.18.2
-      swagger-ui-express:
-        specifier: ^5.0.1
-        version: 5.0.1(express@4.21.2)
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0

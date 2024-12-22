@@ -2,6 +2,8 @@ import { RouterOptions } from 'express';
 
 import { Middleware } from './middleware';
 
+import { createMetadata, ROUTE_METADATA } from './helpers';
+
 /**
  * All possible parameter decorator types
  *
@@ -90,14 +92,12 @@ export interface ExpressClass {
  * @param {ExpressClass} target
  * @returns {ExpressMeta}
  */
-export function getMeta(target: ExpressClass): ExpressMeta {
-  if (!target.__express_meta__) {
-    target.__express_meta__ = {
-      url: '',
-      middleware: [],
-      routes: {},
-      params: {},
-    };
-  }
-  return target.__express_meta__;
+export function getMeta(target: object): ExpressMeta {
+  const meta = createMetadata(target, ROUTE_METADATA, () => ({
+    url: '',
+    middleware: [],
+    routes: {},
+    params: {},
+  }));
+  return meta as ExpressMeta;
 }

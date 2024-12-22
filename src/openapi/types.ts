@@ -1,3 +1,6 @@
+import { OpenAPIV3_1 } from 'openapi-types';
+import { ClassConstructor } from '../core/types';
+
 type Type = 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object';
 
 type Ref = {
@@ -205,7 +208,20 @@ export type SchemaMeta = {
   required?: string[];
 };
 
-export interface OpenApiClass {
-  __openapi_meta__?: OpenApiMeta;
-  __openapi_schema_meta__?: SchemaMeta;
+
+export interface SwaggerConfig {
+  description?: string;
+  path?: string;
+  theme?: 'light' | 'dark' | 'auto';
+  title?: string;
 }
+
+
+export interface ApiBasicResponse {
+  description: string;
+  type?: ClassConstructor;
+}
+
+export type ApiResponse = OpenAPIV3_1.ResponseObject & ApiBasicResponse;
+
+export type ApiResponses = Record<number, ApiResponse>;

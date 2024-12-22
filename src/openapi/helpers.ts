@@ -1,5 +1,5 @@
-import { InjectionToken } from '@di';
-import { Container } from '@core/container';
+import { InjectionToken } from '../di';
+import { Container } from '../core/container';
 import { Express } from 'express';
 import * as swaggerUi from 'swagger-ui-express';
 
@@ -33,6 +33,9 @@ export async function enableOpenApi(
   app: Express,
   options: OpenApiOptions = {}
 ) {
+
+  console.log('enableOpenApi options', app, options);
+
   const doc = await getOpenApiDoc();
 
   // add the basics

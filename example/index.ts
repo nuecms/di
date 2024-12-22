@@ -1,5 +1,5 @@
 import express from 'express';
-import { Injectable } from '@di';
+import { Injectable } from '../';
 import {
   attachControllers,
   Controller,
@@ -7,8 +7,8 @@ import {
   ErrorMiddleware,
   Get,
   Middleware,
-} from '@core';
-import { Container } from '@core/container';
+} from '../';
+import { Container } from '../';
 
 const app: express.Express = express();
 
@@ -37,7 +37,9 @@ class RequestMiddleware implements Middleware {
   }
 }
 
-@Controller('/', [RequestMiddleware])
+@Controller('/', {
+  middleware: [RequestMiddleware]
+})
 class IndexController {
   @Get('/')
   index() {
