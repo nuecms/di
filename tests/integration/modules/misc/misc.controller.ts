@@ -1,6 +1,6 @@
 import { Controller, UnauthorizedError } from '@core';
 import { Body, Get, Post, Render } from '@core/base';
-import { ApiResponse } from '@core/swagger';
+import { ApiResponse } from '@openapi';
 import { IsString } from 'class-validator';
 
 export class Creds {

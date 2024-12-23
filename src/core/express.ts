@@ -68,7 +68,7 @@ async function registerController(
   ) => Promise<InstanceType<Type>> | InstanceType<Type>
 ) {
   const controller = await extractController(Controller);
-  const meta = getMeta(controller);
+  const meta = getMeta(Controller);
   const router = Router(meta.routerOptions);
 
   /**
@@ -198,7 +198,7 @@ function extractParameters(
 /**
  * Get controller instance from container or instantiate one
  */
-async function getController(Controller: Type): Promise<ExpressClass> {
+async function getController(Controller: Type): Promise<any> {
   try {
     if (!Container.has(Controller)) {
       Container.provide([

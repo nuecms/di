@@ -8,13 +8,14 @@ export default defineConfig({
     viteDecorators({
       tsconfig: path.resolve(__dirname, 'tsconfig.json'),
       force: true,          // Optional: Force TypeScript compilation even if decorators aren't detected
-      // srcDir: 'src/**/*.ts', // Optional: Glob pattern for finding source files
+      srcDir: '(src|tests)/**/*.ts', // Optional: Glob pattern for finding source files
     }),
     tsconfigPaths(),
   ],
   test: {
     environment: 'node',
     globals: true,
+    setupFiles: './tests/setupEnv.ts', // setup file
   },
   resolve: {
     alias: {

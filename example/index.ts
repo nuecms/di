@@ -1,5 +1,5 @@
 import express from 'express';
-import { Injectable } from '../';
+import { Injectable } from '@di';
 import {
   attachControllers,
   Controller,
@@ -7,8 +7,8 @@ import {
   ErrorMiddleware,
   Get,
   Middleware,
-} from '../';
-import { Container } from '../';
+} from '@core';
+import { Container } from '@core/container';
 
 const app: express.Express = express();
 
@@ -31,7 +31,7 @@ class RequestMiddleware implements Middleware {
     _response: express.Response,
     next: express.NextFunction
   ) {
-    console.log('RequestMiddleware', this.dataProvider.data());
+    // console.log('RequestMiddleware', this.dataProvider.data());
 
     next();
   }
@@ -67,7 +67,6 @@ class ServerErrorMiddleware implements ErrorMiddleware {
     response: express.Response,
     next: express.NextFunction
   ) {
-    console.log(this.dataProvider.data());
 
     if (error instanceof NotFoundError) {
       return response.send('Not Found Error');
@@ -81,7 +80,7 @@ class ServerErrorMiddleware implements ErrorMiddleware {
   }
 }
 
-export async function start() {
+export async function viteNodeApp() {
   Container.provide([
     { provide: DataProvider, useClass: DataProvider },
     { provide: ERROR_MIDDLEWARE, useClass: ServerErrorMiddleware },
@@ -94,4 +93,8 @@ export async function start() {
   });
 }
 
-start().catch(console.error);
+viteNodeApp().catch(console.error);
+
+
+
+

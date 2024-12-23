@@ -1,7 +1,6 @@
-import { ExpressMeta } from '@core/meta';
 import { MethodMetadata, ParamMetadata } from '../types';
 import { extractParamNames } from '../utils';
-import { CONTROLLER_METADATA, METHOD_METADATA, PARAM_TYPE_METADATA, PARAMS_METADATA, RETURN_TYPE_METADATA } from './constants';
+import { CONTROLLER_METADATA, METHOD_METADATA, MIDDLEWARE_METADATA, PARAM_TYPE_METADATA, PARAMS_METADATA, RETURN_TYPE_METADATA } from './constants';
 import { Context } from './context';
 import { createMetadata } from './metadata-store';
 
@@ -9,28 +8,28 @@ import { createMetadata } from './metadata-store';
 
 
 // get metadata and create proxy
-function getMetaAndCreateProxy(target: object, key: string | symbol, methodName?: string) {
-  const initialData = () => ({ params: {}, methods: [] })
-  const meta = createMetadata(target, key, initialData) as any
-  if (methodName) {
-    let methodMeta = meta.methods.find((m: any) => m.methodName === methodName);
-    if (!methodMeta) {
-      methodMeta = { methodName, params: [] };
-      meta.methods.push(methodMeta);
-    }
-  }
+function getMetaAndCreateProxy(target: object, key: string | symbol, initdata: object = {}): any {
+  const meta = createMetadata(target, key, ()=>(initdata)) as any
   return meta;
 }
 
 
-export function getTargetMeta(target: object): ExpressMeta {
+export function getTargetMeta(target: { new (...args: any[]): any }): any {
   const methodMeta = Reflect.getMetadata(METHOD_METADATA, target);
   const controllerMeta = Reflect.getMetadata(CONTROLLER_METADATA, target);
-  const paramsMeta = Reflect.getMetadata(PARAMS_METADATA, target);
+  const middlewareMeta = Reflect.getMetadata(MIDDLEWARE_METADATA, target);
+  const paramsMeta = []
+  for (const methodName of Object.getOwnPropertyNames(target.prototype)) {
+    const params = Reflect.getMetadata(PARAMS_METADATA, target.prototype[methodName]);
+    if (params) {
+      paramsMeta.push(...params);
+    }
+  }
   return {
-    ...controllerMeta,
+    controller: controllerMeta,
     methods: methodMeta,
     params: paramsMeta,
+    middleware: middlewareMeta,
   };
 }
 
@@ -40,16 +39,17 @@ export function classDecoratorFactory(key: string, metadata: Partial<MethodMetad
   return function (target: object) {
     // make sure class metadata exists and can be updated automatically through Proxy
     const classMeta = getMetaAndCreateProxy(target, key);
-    // update class metadata
-    Object.assign(classMeta, metadata);
+    classMeta.options = metadata.options;
+    classMeta.url = metadata.url;
   };
 }
 
 
 export function middlewareDecoratorFactory(middleware: Function): MethodDecorator {
   return function (target: object, methodName: string | symbol, descriptor: TypedPropertyDescriptor<any>) {
-    const methodMeta = getMetaAndCreateProxy(target.constructor, METHOD_METADATA, methodName as string);
-    methodMeta.middleware = [middleware, ...methodMeta.middleware];
+    const methodMeta = getMetaAndCreateProxy(target.constructor, MIDDLEWARE_METADATA, {});
+    methodMeta[methodName] = methodMeta[methodName] || [];
+    methodMeta[methodName].push(middleware);
     return descriptor;
   };
 }
@@ -58,18 +58,15 @@ export function middlewareDecoratorFactory(middleware: Function): MethodDecorato
 export function methodDecoratorFactory(metadata: Partial<MethodMetadata>  & { [key: string]: any; }): MethodDecorator {
   return function (target: object, methodName: string | symbol, descriptor: TypedPropertyDescriptor<any>) {
     // make sure method metadata exists and can be updated automatically through Proxy
-    const methodMeta = getMetaAndCreateProxy(target.constructor, METHOD_METADATA, methodName as string);
+    const methods = getMetaAndCreateProxy(target.constructor, METHOD_METADATA, []);
 
     const returnType = Reflect.getMetadata(RETURN_TYPE_METADATA, target, methodName);
 
-    // update method metadata
-    Object.assign(methodMeta, {
+    methods.push({
+      methodName,
       returnType: returnType === Promise ? null : returnType,
-      source: target.constructor.name,
-      type: metadata.type || 'GET',
-      url: metadata.url || '/',
       ...metadata,
-    });
+    })
 
     return descriptor;
   };
@@ -77,10 +74,9 @@ export function methodDecoratorFactory(metadata: Partial<MethodMetadata>  & { [k
 
 export function paramDecoratorFactory(metadata: Partial<ParamMetadata> & { [key: string]: any; }) {
   return function (target: InstanceType<any>, methodName: string, index: number) {
-    const params = getMetaAndCreateProxy(target[methodName], PARAMS_METADATA);
-
+    const params = getMetaAndCreateProxy(target[methodName], PARAMS_METADATA, []);
     // get parameter type and name
-    const argType = Reflect.getMetadata(PARAM_TYPE_METADATA, target, methodName)[index];
+    const argType = Reflect.getMetadata(PARAM_TYPE_METADATA, target, methodName)[index]
     const argName = extractParamNames(target[methodName])[index];
 
     // create parameter metadata
@@ -91,10 +87,8 @@ export function paramDecoratorFactory(metadata: Partial<ParamMetadata> & { [key:
       methodName,
       ...metadata,
     };
-
     // update parameter metadata
     params[index] = paramMetadata;
-
     params
     .filter((param: ParamMetadata) => param.paramType === metadata.paramType)
     .forEach((param: ParamMetadata, index: number) => {

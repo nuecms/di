@@ -1,9 +1,8 @@
-import { OpenApiClass, OpenApiMeta, SchemaMeta } from './types';
-
+import { OpenApiMeta, SchemaMeta } from './types';
 
 import { createMetadata } from '@core';
 
-import { SWAGGER_CONFIG_METADATA, SWAGGER_SCHEMA_METADATA,  } from './helpers/constants/constants';
+import { SWAGGER_CONFIG_METADATA, SWAGGER_SCHEMA_METADATA  } from './helpers/constants/constants';
 
 
 

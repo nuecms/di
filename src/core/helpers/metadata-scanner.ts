@@ -20,7 +20,6 @@ export class MetadataScanner {
   private scanModule(module: ClassConstructor, parentNamespaces = []) {
     const { controllers, modules, namespace } = this.reflector.getModuleMetadata(module);
     const namespaces = [...parentNamespaces, namespace];
-
     const methods = controllers.map(controller => {
       const metadata = this.reflector.getControllerMetadata(controller);
 

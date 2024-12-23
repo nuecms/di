@@ -1,4 +1,4 @@
-import { ApiParameter } from '@core/swagger';
+import { ApiParameter } from '@openapi';
 import { IsString } from 'class-validator';
 
 export class Message {
