@@ -117,7 +117,7 @@ export function getMeta(target: any): ExpressMeta {
     }
   }
 
-  meta.middleware = controllerMeta.options.middleware || [];
+  meta.middleware = controllerMeta.middleware || [];
   meta.params = {};
   for (const methodName of Object.getOwnPropertyNames(target.prototype)) {
     const params = Reflect.getMetadata(PARAMS_METADATA, target.prototype[methodName]);

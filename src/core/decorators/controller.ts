@@ -2,43 +2,30 @@ import { Injectable } from '../../di';
 
 import { classDecoratorFactory, CONTROLLER_METADATA } from '../helpers';
 import { ClassConstructor, ControllerOptions } from '../types';
+import { RouterOptions } from 'express';
+import { Middleware } from '../middleware';
 
 
-/**
- * Registers controller for base url
- */
-// export function Controller(
-//   url: string,
-//   middleware?: Middleware[]
-// ): ClassDecorator;
-// export function Controller(
-//   url: string,
-//   routerOptions?: RouterOptions,
-//   middleware?: Middleware[]
-// ): ClassDecorator;
-// export function Controller(
-//   url: string,
-//   middlewareOrRouterOptions?: Middleware[] | RouterOptions,
-//   middleware: Middleware[] = []
-// ) {
-//   return (target: Type) => {
-//     const meta: ExpressMeta = getMeta(target.prototype as ExpressClass);
-
-//     meta.url = url;
-//     meta.middleware = Array.isArray(middlewareOrRouterOptions)
-//       ? middlewareOrRouterOptions
-//       : middleware;
-//     meta.routerOptions = Array.isArray(middlewareOrRouterOptions)
-//       ? null
-//       : middlewareOrRouterOptions;
-
-//     Injectable()(target);
-//   };
-// }
-
-export function Controller(url = '', options?: ControllerOptions) {
+export function Controller(
+  url: string,
+  middleware?: Middleware[]
+): ClassDecorator;
+export function Controller(
+  url: string,
+  routerOptions?: RouterOptions,
+  middleware?: Middleware[]
+): ClassDecorator;
+export function Controller(
+    url: string,
+    options?: Middleware[] | RouterOptions | ControllerOptions,
+    middleware: Middleware[] = []) {
   return (target: ClassConstructor) => {
-    classDecoratorFactory(CONTROLLER_METADATA, { options, url })(target);
+    const meta = {} as any
+    meta.url = url;
+    meta.middleware = Array.isArray(options) ? options : middleware;
+    meta.options = Array.isArray(options) ? null : options;
+    classDecoratorFactory(CONTROLLER_METADATA, meta)(target);
+
     Injectable()(target);
   };
 }
