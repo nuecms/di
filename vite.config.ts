@@ -52,6 +52,7 @@ export default defineConfig({
         'class-validator',
         'body-parser',
         'swagger-ui-express',
+        'swagger-ui-dist',
       ],
       output: {
         globals: {

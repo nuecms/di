@@ -123,3 +123,17 @@ export function Security(
     return descriptor;
   };
 }
+
+
+export function CTags(tag: string): ClassDecorator;
+export function CTags(tags: string[]): ClassDecorator;
+export function CTags(tags: string | string[]): ClassDecorator {
+  return (target: any) => {
+    const meta = getOpenApiMeta(target.prototype);
+    Object.keys(meta).forEach((methodName) => {
+      const pathMeta = meta[methodName];
+      pathMeta.tags = Array.isArray(tags) ? tags : [tags];
+    });
+  };
+}
+

@@ -39,9 +39,8 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs.js"
     },
-    "./src": {
-      "import": "./src/index.ts",
-      "require": "./src/index.ts"
+    "./src*": {
+      "import": "./src*"
     }
   },
   "main": "dist/index.cjs.js",

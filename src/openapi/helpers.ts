@@ -29,38 +29,6 @@ export async function getOpenApiDoc() {
   }
 }
 
-export async function enableOpenApi(
-  app: Express,
-  options: OpenApiOptions = {}
-) {
-
-  console.log('enableOpenApi options', app, options);
-
-  const doc = await getOpenApiDoc();
-
-  // add the basics
-  Object.assign(doc, {
-    info: {
-      title: options.info?.title || process.env.npm_package_name,
-      description:
-        options.info?.description || process.env.npm_package_description,
-      version: options.info?.version || process.env.npm_package_version,
-    },
-    tags: options.tags,
-    servers: options.servers,
-    externalDocs: options.externalDocs,
-    security: options.security,
-  });
-
-  Object.assign(doc.components, {
-    securitySchemes: options.components?.securitySchemes,
-  });
-
-  // setup swagger UI
-  const serveOnPath = options.serveOnPath || '/api-docs';
-
-  app.use(serveOnPath, swaggerUi.serve, swaggerUi.setup(doc));
-}
 
 export async function registerSchema(
   name: string,

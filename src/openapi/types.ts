@@ -222,6 +222,6 @@ export interface ApiBasicResponse {
   type?: ClassConstructor;
 }
 
-type ApiResponse = OpenAPIV3_1.ResponseObject & ApiBasicResponse;
+export type ApiResponse = OpenAPIV3_1.ResponseObject & ApiBasicResponse;
 
 export type ApiResponses = Record<number, ApiResponse>;
