@@ -6,3 +6,4 @@ export const PROPERTY_API_PARAMETER_METADATA = '__swagger__:property:api-paramet
 
 export const SWAGGER_CONFIG_METADATA = '__swagger__:config';
 export const SWAGGER_SCHEMA_METADATA = '__swagger__:schema';
+export const SWAGGER_DOC_METADATA = '__swagger__:doc';

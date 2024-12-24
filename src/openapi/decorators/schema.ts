@@ -1,11 +1,21 @@
-import { registerSchema } from '../helpers';
-import { getSchemaMeta } from '../meta';
+import { getSchemaMeta, getOpenApiDoc } from '../meta';
 import { SchemaDef } from '../types';
+
+
+export async function registerSchema(
+  target: any,
+  name: string,
+  schema: SchemaDef
+): Promise<void> {
+  const doc = getOpenApiDoc(target);
+  const schemas = (doc.components.schemas = doc.components.schemas || {});
+  schemas[name] = schema;
+}
 
 export function Schema(name?: string): ClassDecorator {
   return (target) => {
     const { properties, required } = getSchemaMeta(target.prototype);
-    registerSchema(name || target.name, {
+    registerSchema(target, name || target.name, {
       type: 'object',
       properties,
       required,

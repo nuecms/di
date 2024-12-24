@@ -1,6 +1,5 @@
 export * from './decorators';
 export * from './helpers';
-export * from './helpers/index';
 export type {
   StringSchemaDef,
   NumericSchemaDef,
