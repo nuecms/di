@@ -3,6 +3,7 @@ import { RouterOptions } from 'express';
 import { Middleware } from './middleware';
 
 import { CONTROLLER_METADATA, METHOD_METADATA, MIDDLEWARE_METADATA, PARAMS_METADATA } from './helpers';
+import { Type } from './types';
 
 /**
  * All possible parameter decorator types
@@ -11,14 +12,14 @@ import { CONTROLLER_METADATA, METHOD_METADATA, MIDDLEWARE_METADATA, PARAMS_METAD
  * @enum {number}
  */
 export enum ParameterType {
-  REQUEST,
-  RESPONSE,
-  PARAMS,
-  QUERY,
-  BODY,
-  HEADERS,
-  COOKIES,
-  NEXT,
+  BODY = 'body',
+  COOKIE = 'cookie',
+  HEADER = 'header',
+  PARAM = 'path',
+  QUERY = 'query',
+  REQUEST = 'request',
+  RESPONSE = 'response',
+  NEXT = 'next',
 }
 
 /**
@@ -29,8 +30,8 @@ export enum ParameterType {
  */
 export interface ParameterConfiguration {
   index: number;
-  type: ParameterType;
-  name?: string;
+  paramType: ParameterType;
+  paramName?: string;
   data?: any;
 }
 
@@ -91,16 +92,14 @@ export interface ExpressClass {
  *
  * @returns {ExpressMeta}
  */
-export function getMeta(target: any): ExpressMeta {
+export function getMeta(target: Type): ExpressMeta {
   let meta = {} as ExpressMeta;
-  // target = target.contstructor ? target.contstructor : target;
-  const ctarget = target.constructor ? target.constructor : target;
   const controllerMeta = Reflect.getMetadata(CONTROLLER_METADATA, target);
   meta.url = controllerMeta.url;
   meta.routerOptions = {};
   meta.routes = {};
-  const middlewareMeta = Reflect.getMetadata(MIDDLEWARE_METADATA, ctarget) || {};
-  const methodMeta = Reflect.getMetadata(METHOD_METADATA, ctarget);
+  const middlewareMeta = Reflect.getMetadata(MIDDLEWARE_METADATA, target) || {};
+  const methodMeta = Reflect.getMetadata(METHOD_METADATA, target);
   if (methodMeta) {
     for (const method of methodMeta) {
       // if use tsx method.methodName is not a string

@@ -19,7 +19,7 @@ export class ExpressAdapter implements HttpApplicationAdapter {
     }
   }
 
-  getParam(type: ParameterType, name: string, req: express.Request, res: express.Response) {
+  getParam(type: ParameterType, name: string, req: express.Request, res: express.Response, next: express.NextFunction) {
     switch (type) {
       case ParameterType.BODY: return () => name ? req.body?.[name] : req.body;
       case ParameterType.COOKIE: return () => name ? req.cookies?.[name] : req.cookies;
@@ -28,6 +28,7 @@ export class ExpressAdapter implements HttpApplicationAdapter {
       case ParameterType.QUERY: return () => name ? req.query?.[name] : req.query;
       case ParameterType.REQUEST: return () => req;
       case ParameterType.RESPONSE: return () => res;
+      case ParameterType.NEXT: return () => next;
       default: return () => req;
     }
   }

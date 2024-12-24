@@ -68,7 +68,7 @@ async function registerController(
   ) => Promise<InstanceType<Type>> | InstanceType<Type>
 ) {
   const controller = await extractController(Controller);
-  const meta = getMeta(Controller);
+  const meta = getMeta(Controller as Type);
   const router = Router(meta.routerOptions);
 
   /**
@@ -163,31 +163,31 @@ function extractParameters(
 ): any[] {
   const args = [];
 
-  for (const { name, index, type } of params) {
-    switch (type) {
+  for (const { paramName, index, paramType } of params) {
+    switch (paramType) {
       case ParameterType.RESPONSE:
         args[index] = res;
         break;
       case ParameterType.REQUEST:
-        args[index] = getParam(req, null, name);
+        args[index] = getParam(req, null, paramName);
         break;
       case ParameterType.NEXT:
         args[index] = next;
         break;
-      case ParameterType.PARAMS:
-        args[index] = getParam(req, 'params', name);
+      case ParameterType.PARAM:
+        args[index] = getParam(req, 'params', paramName);
         break;
       case ParameterType.QUERY:
-        args[index] = getParam(req, 'query', name);
+        args[index] = getParam(req, 'query', paramName);
         break;
       case ParameterType.BODY:
-        args[index] = getParam(req, 'body', name);
+        args[index] = getParam(req, 'body', paramName);
         break;
-      case ParameterType.HEADERS:
-        args[index] = getParam(req, 'headers', name);
+      case ParameterType.HEADER:
+        args[index] = getParam(req, 'headers', paramName);
         break;
-      case ParameterType.COOKIES:
-        args[index] = getParam(req, 'cookies', name);
+      case ParameterType.COOKIE:
+        args[index] = getParam(req, 'cookies', paramName);
         break;
     }
   }

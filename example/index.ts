@@ -7,6 +7,7 @@ import {
   ErrorMiddleware,
   Get,
   Middleware,
+  Request
 } from '@core';
 import { Container } from '@core/container';
 
@@ -37,10 +38,29 @@ class RequestMiddleware implements Middleware {
   }
 }
 
-@Controller('/', {
-  middleware: [RequestMiddleware]
-})
+
+
+@Controller('/', [RequestMiddleware])
 class IndexController {
+  @Get('/')
+  index(@Request() request: express.Request) {
+    console.log('IndexController', request)
+    return 'Hello World';
+  }
+
+  @Get('/not-found-error')
+  notFoundError() {
+    throw new NotFoundError();
+  }
+
+  @Get('/internal-server-error')
+  internalServerError() {
+    throw new InternalServerError();
+  }
+}
+
+@Controller('/api', [RequestMiddleware])
+class ApiController {
   @Get('/')
   index() {
     return 'Hello World';
@@ -86,10 +106,10 @@ export async function viteNodeApp() {
     { provide: ERROR_MIDDLEWARE, useClass: ServerErrorMiddleware },
   ]);
 
-  await attachControllers(app, [IndexController]);
+  await attachControllers(app, [ApiController, IndexController]);
 
-  app.listen(3000, () => {
-    console.info('Server is running on port 3000');
+  app.listen(3001, () => {
+    console.info('Server is running on port 3001');
   });
 }
 

@@ -26,6 +26,7 @@ export enum ParameterType {
   QUERY = 'query',
   REQUEST = 'request',
   RESPONSE = 'response',
+  NEXT = 'next',
 }
 
 

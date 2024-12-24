@@ -54,3 +54,18 @@ export function Response(paramName?: string) {
     paramType: ParameterType.RESPONSE,
   });
 }
+
+
+export const Req = Request;
+
+
+export const Res = Response;
+
+
+export function Next() {
+  return paramDecoratorFactory({
+    paramType: ParameterType.NEXT,
+  });
+}
+
+
