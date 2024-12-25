@@ -59,9 +59,7 @@ export function methodDecoratorFactory(metadata: Partial<MethodMetadata>  & { [k
   return function (target: object, methodName: string | symbol, descriptor: TypedPropertyDescriptor<any>) {
     // make sure method metadata exists and can be updated automatically through Proxy
     const methods = getMetaAndCreateProxy(target.constructor, METHOD_METADATA, []);
-
     const returnType = Reflect.getMetadata(RETURN_TYPE_METADATA, target, methodName);
-
     methods.push({
       methodName,
       returnType: returnType === Promise ? null : returnType,
@@ -76,7 +74,8 @@ export function paramDecoratorFactory(metadata: Partial<ParamMetadata> & { [key:
   return function (target: InstanceType<any>, methodName: string, index: number) {
     const params = getMetaAndCreateProxy(target[methodName], PARAMS_METADATA, []);
     // get parameter type and name
-    const argType = Reflect.getMetadata(PARAM_TYPE_METADATA, target, methodName)[index]
+    const r = Reflect.getMetadata(PARAM_TYPE_METADATA, target, methodName)
+    const argType = r ? r[index] : null;
     const argName = extractParamNames(target[methodName])[index];
 
     // create parameter metadata

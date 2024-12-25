@@ -128,15 +128,13 @@ import { attachMiddleware } from "@nuecms/di";
 import {Request,Response,NextFunction} from '@nuecms/di/node_modules/express';
 
 export function Access(key: string) {
-    return function (target: any,propertyKey: string,descriptor: PropertyDescriptor) {
-      attachMiddleware(target, propertyKey, (req : Request,res : Response,next : NextFunction)=>{
-            if(["CAN_ACCESS_TEST","CAN_ACCESS_HOME"].includes(key)){
-              next();
-            }else{
-              res.send("ACCESS DENIED");
-            }
-        })
-    };
+    return attachMiddleware((req : Request,res : Response,next : NextFunction)=>{
+      if(["CAN_ACCESS_TEST","CAN_ACCESS_HOME"].includes(key)){
+        next();
+      }else{
+        res.send("ACCESS DENIED");
+      }
+    })
   }
 
 ```

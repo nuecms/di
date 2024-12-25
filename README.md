@@ -49,6 +49,38 @@ npm run build
 npm start
 ```
 
+### nuxt runtime/build config
+
+
+In `nuxt.config.ts` add the following code:
+
+to in nuxt project, you need to install  `vite-ts-decorators`.
+
+```ts
+  hooks: {
+    // https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/core/nitro.ts#L407
+    'nitro:init': (nitro: Nitro) => {
+      nitro.hooks.hook('rollup:before', (nitro, rollupConfig) => {
+        if (Array.isArray(rollupConfig.plugins)) {
+          const index = rollupConfig.plugins.findIndex((plugin) => plugin && 'name' in plugin && plugin.name === 'esbuild');
+          rollupConfig.plugins.splice(index, 0, {
+            ...viteDecorators({
+              tsconfig: path.resolve(__dirname, 'tsconfig.json'),
+              force: true,
+              srcDir: 'server/**/*.ts', // Optional: Glob pattern for finding source files
+            }),
+            enforce: null,
+          });
+        }
+      })
+    },
+    'nitro:build:before': (nitro: Nitro) => {
+      nitro.options.moduleSideEffects.push('reflect-metadata')
+    }
+  },
+```
+
+
 ## Example Usage
 
 ### API Endpoints
