@@ -65,4 +65,21 @@ export interface Metadata extends MethodMetadata {
   url: string;
 }
 
+// 添加路径冲突检测相关类型
+export interface PathConflictInfo {
+  path: string;
+  controllers: Array<{
+    name: string;
+    hasMiddleware: boolean;
+    middlewareCount: number;
+  }>;
+}
+
+export interface ControllerValidationOptions {
+  strictPathValidation?: boolean;  // 严格路径验证
+  allowPathConflicts?: boolean;    // 允许路径冲突
+  warnOnConflicts?: boolean;       // 冲突时警告
+  throwOnConflicts?: boolean;      // 冲突时抛出异常
+}
+
 

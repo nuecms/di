@@ -8,7 +8,7 @@ import { createMetadata } from './metadata-store';
 
 
 // get metadata and create proxy
-function getMetaAndCreateProxy(target: object, key: string | symbol, initdata: object = {}): any {
+export function getMetaAndCreateProxy(target: object, key: string | symbol, initdata: object = {}): any {
   const meta = createMetadata(target, key, ()=>(initdata)) as any
   return meta;
 }
@@ -37,10 +37,37 @@ export function getTargetMeta(target: { new (...args: any[]): any }): any {
 
 export function classDecoratorFactory(key: string, metadata: Partial<MethodMetadata> & { [key: string]: any; }): ClassDecorator {
   return function (target: object) {
-    // make sure class metadata exists and can be updated automatically through Proxy
-    const classMeta = getMetaAndCreateProxy(target, key);
-    classMeta.options = metadata.options;
-    classMeta.url = metadata.url;
+    // 使用 getMetaAndCreateProxy 确保元数据存在，提供合适的默认值
+    const defaultData = key === CONTROLLER_METADATA ? {
+      url: '',
+      middleware: [],
+      options: null
+    } : {};
+
+    const classMeta = getMetaAndCreateProxy(target, key, defaultData);
+
+    // 安全地设置属性
+    if (metadata.options !== undefined) {
+      classMeta.options = metadata.options;
+    }
+    if (metadata.url !== undefined) {
+      classMeta.url = metadata.url;
+    }
+
+    // if has middleware, merge it to class metadata
+    if (metadata.middleware) {
+      let middleware = classMeta.middleware || [];
+      middleware = middleware.concat(metadata.middleware);
+      classMeta.middleware = middleware;
+
+      // 开发环境警告
+      if (process.env.NODE_ENV !== 'production' && key === CONTROLLER_METADATA) {
+        console.log(`⚠️  Controller ${target.constructor.name} added ${metadata.middleware.length} middleware(s)`);
+        console.log(`   Current path: ${classMeta.url || '(root path)'}`);
+        console.log(`   Total middleware count: ${middleware.length}`);
+        console.log(`   Tip: Ensure unique paths to avoid middleware pollution`);
+      }
+    }
   };
 }
 

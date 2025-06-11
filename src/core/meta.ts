@@ -96,7 +96,7 @@ export function getMeta(target: Type): ExpressMeta {
   let meta = {} as ExpressMeta;
   const controllerMeta = Reflect.getMetadata(CONTROLLER_METADATA, target);
   meta.url = controllerMeta.url;
-  meta.routerOptions = {};
+  meta.routerOptions = {};// disable
   meta.routes = {};
   const middlewareMeta = Reflect.getMetadata(MIDDLEWARE_METADATA, target) || {};
   const methodMeta = Reflect.getMetadata(METHOD_METADATA, target);

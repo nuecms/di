@@ -89,16 +89,27 @@ async function getMiddlewareInstance(
   middleware: InjectionToken | Middleware | ErrorMiddleware
 ) {
   try {
-    if (!Container.has(middleware) && (middleware as Type).prototype?.use) {
-      Container.provide([
-        {
-          provide: middleware,
-          useClass: middleware as Type,
-        },
-      ]);
+    // Check if middleware is already an instance (object with use method)
+    if (middleware && typeof middleware === 'object' && 'use' in middleware && typeof middleware.use === 'function') {
+      return middleware;
     }
 
-    return await Container.get(middleware);
+    // 对于中间件类，不使用 Container 的单例模式，每次都创建新实例
+    if (typeof middleware === 'function' && middleware.prototype?.use) {
+      return new (middleware as Type<MiddlewareClass | ErrorMiddlewareClass>)();
+    }
+
+    // 只有当中间件被明确注册到 Container 时才使用 Container
+    if (Container.has(middleware)) {
+      return await Container.get(middleware);
+    }
+
+    // 对于函数类型的中间件，直接返回
+    if (typeof middleware === 'function') {
+      return middleware;
+    }
+
+    return null;
   } catch (_e) {
     if (typeof middleware === 'function') {
       return middleware.prototype?.use

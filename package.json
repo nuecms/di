@@ -17,7 +17,7 @@
     "build": "vite build",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
-    "tesx": "tsx watch --tsconfig tsconfig.json example/index.ts",
+    "tesx": "vite-node -w example/index.ts",
     "test": "vitest --ui --api.port 3000",
     "test:coverage": "vitest --coverage",
     "format": "prettier --write .",
@@ -51,6 +51,7 @@
     "src"
   ],
   "devDependencies": {
+    "@nuecms/di": "link:./",
     "@types/express": "5.0.0",
     "@types/node": "^22.10.2",
     "@types/swagger-ui-dist": "^3.30.5",
@@ -79,12 +80,12 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.3",
+    "vite-node": "^3.0.9",
     "vite-plugin-dts": "^4.3.0",
     "vite-plugin-tsc-watch": "^3.0.2",
-    "vite-ts-decorators": "^1.0.1",
+    "vite-ts-decorators": "^1.0.2",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^2.1.8",
-    "@nuecms/di": "./"
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "express": "^4.18.2",

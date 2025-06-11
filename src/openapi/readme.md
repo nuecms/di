@@ -55,24 +55,6 @@ Defines a schema on the openapi document
 #### Class Decorators
 
 
-```ts
-@WithDefinitions(options: WithDefinitionsOpts)
-```
-
-Enables openapi definitions for a controller class (using `@Controller()` from `@nuecms/di`)
-
-**Params:**
-
-| Name | Type | Attribute | Description |
-| ---- |----- | --------- | ----------- |
-| options | `object` |  |  |
-| options.tags | `string[]` | <ul><li>optional</li></ul> | Tags to be applied to all routes on the controller |
-| options.security | `object[]` | <ul><li>optional</li></ul> | Security schemes to be applied to all routes on the controller |
-| options.responses | `object` | <ul><li>optional</li></ul> | Tags to be applied to all routes on the controller |
-| options.basePath | `string` |  | The base path for all routes on the controller |
-
-<hr>
-
 
 
 ```ts

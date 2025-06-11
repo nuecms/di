@@ -20,12 +20,15 @@ export function Controller(
     options?: Middleware[] | RouterOptions | ControllerOptions,
     middleware: Middleware[] = []) {
   return (target: ClassConstructor) => {
-    const meta = {} as any
-    meta.url = url;
-    meta.middleware = Array.isArray(options) ? options : middleware;
-    meta.options = Array.isArray(options) ? null : options;
-    classDecoratorFactory(CONTROLLER_METADATA, meta)(target);
+    const meta = {
+      url,
+      middleware: Array.isArray(options) ? options : middleware,
+      options: Array.isArray(options) ? null : options
+    };
 
+
+    classDecoratorFactory(CONTROLLER_METADATA, meta)(target);
     Injectable()(target);
+    return target;
   };
 }
