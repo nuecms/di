@@ -173,3 +173,52 @@ To better avoid path conflicts, recommended VS Code settings:
   }
 }
 ```
+
+## Path Mounting Scenarios
+
+### ✅ Safe: Different Mount Points
+```typescript
+// These do NOT conflict - verified by testing
+app.use('/api', apiRouter);           // Final paths: /api/shop/*
+app.use('/api/admin', adminRouter);   // Final paths: /api/admin/shop/*
+
+@Controller('/shop')  // Works safely in both routers
+```
+**Test Result**: ✅ Each middleware executes only for its own paths
+
+### ✅ Safe: Completely Different Paths
+```typescript
+app.use('/users', userRouter);        // Final paths: /users/*
+app.use('/products', productRouter);  // Final paths: /products/*
+```
+**Test Result**: ✅ Perfect isolation, no middleware crossover
+
+### ✅ Safe: Path Containment
+```typescript
+app.use('/order', baseRouter);           // Final paths: /order/*
+app.use('/order/extended', extendedRouter); // Final paths: /order/extended/*
+```
+**Test Result**: ✅ Express correctly routes to most specific path
+
+### ❌ Conflict: Same Full Paths
+```typescript
+// These WILL conflict - causes middleware pollution
+app.use('/api', router1);  // Controller: @Controller('/shop')
+app.use('/api', router2);  // Controller: @Controller('/shop')
+// Both resolve to: /api/shop/* ← IDENTICAL = CONFLICT!
+```
+
+## Key Insight: Final Path Matters
+
+The framework now detects conflicts based on **final resolved paths**:
+
+- `/api` + `/shop` = `/api/shop`
+- `/api/admin` + `/shop` = `/api/admin/shop`
+- These are **different** → No conflict ✅
+
+## Updated Best Practices
+
+1. **Focus on final paths**: `/api/shop` ≠ `/api/admin/shop` ✅
+2. **Mount point strategy**: Use different mount points for different contexts
+3. **Controller path reuse**: Same controller paths are OK with different mount points
+4. **Path containment**: Usually safe, Express handles correctly

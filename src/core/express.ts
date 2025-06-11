@@ -28,7 +28,8 @@ import { classDecoratorFactory, CONTROLLER_METADATA, middlewareDecoratorFactory 
  */
 export async function attachControllers(
   app: Express | Router,
-  controllers: Type[]
+  controllers: Type[],
+  mountPoint?: string // 添加挂载点参数
 ) {
   // 在开发环境下检测路径冲突
   if (process.env.NODE_ENV !== 'production') {
@@ -37,7 +38,7 @@ export async function attachControllers(
       const meta = getMeta(controller);
       const hasMiddleware = meta.middleware && meta.middleware.length > 0;
       const middlewareCount = meta.middleware?.length || 0;
-      pathDetector.detectConflict(controller.name, meta.url, hasMiddleware, middlewareCount);
+      pathDetector.detectConflict(controller.name, meta.url, hasMiddleware, middlewareCount, mountPoint);
     });
   }
 
@@ -329,43 +330,107 @@ export function attachClassMiddleware(middleware: Function) {
 
 // 添加路径冲突检测器
 class PathConflictDetector {
-  private registeredPaths = new Map<string, { controller: string, hasMiddleware: boolean, middlewareCount: number }>();
+  private registeredPaths = new Map<string, {
+    controller: string,
+    hasMiddleware: boolean,
+    middlewareCount: number,
+    mountPoint?: string
+  }>();
 
-  detectConflict(controllerName: string, path: string, hasMiddleware: boolean, middlewareCount: number = 0) {
-    const existing = this.registeredPaths.get(path);
+  detectConflict(controllerName: string, path: string, hasMiddleware: boolean, middlewareCount: number = 0, mountPoint?: string) {
+    // 创建完整路径标识 - 这是关键！
+    const fullPathKey = this.buildFullPath(mountPoint, path);
+    const existing = this.registeredPaths.get(fullPathKey);
 
     if (existing) {
-      // 检测到路径冲突
+      // 只有完全相同的完整路径才会冲突
       if (existing.hasMiddleware || hasMiddleware) {
         const totalMiddleware = existing.middlewareCount + middlewareCount;
         console.warn(`
-🚨 Path Conflict Warning:
-   Path "${path}" is used by multiple controllers:
-   - ${existing.controller} (middleware: ${existing.hasMiddleware ? 'yes' : 'no'}, count: ${existing.middlewareCount})
-   - ${controllerName} (middleware: ${hasMiddleware ? 'yes' : 'no'}, count: ${middlewareCount})
+🚨 REAL Path Conflict Detected:
+   Identical full path "${fullPathKey}" used by multiple controllers:
+   - ${existing.controller} (middleware: ${existing.middlewareCount})
+   - ${controllerName} (middleware: ${middlewareCount})
 
-   ⚠️  CRITICAL: Each request will execute ${totalMiddleware} middleware(s) in sequence!
-   This causes performance issues and unexpected behavior.
+   ⚠️  CRITICAL: Each request will execute ${totalMiddleware} middleware(s)!
 
-   Recommended solutions:
-   1. Use unique paths: @Controller('${path}/${controllerName.toLowerCase().replace('controller', '')}')
-   2. Or use path-specific middleware
+   This is a REAL conflict because the final paths are identical.
+   Different mount points like /api vs /api/admin would NOT conflict.
 
-   See: https://github.com/nuecms/di/blob/main/docs/middleware-pollution-solutions.md
+   Fix: Use unique controller paths or mount points.
+
+   📖 See solutions: https://github.com/nuecms/di/blob/main/docs/middleware-pollution-solutions.md
         `);
 
-        // 如果是生产环境，抛出错误
         if (process.env.NODE_ENV === 'production') {
-          throw new Error(`Path conflict: "${path}" is used by multiple controllers with middleware pollution risk`);
+          throw new Error(`Path conflict: "${fullPathKey}" has real middleware pollution risk`);
+        }
+      }
+    } else {
+      // 检查路径包含关系（通常是安全的）
+      this.checkPathContainment(controllerName, fullPathKey, hasMiddleware, middlewareCount);
+    }
+
+    this.registeredPaths.set(fullPathKey, {
+      controller: controllerName,
+      hasMiddleware,
+      middlewareCount,
+      mountPoint
+    });
+  }
+
+  private buildFullPath(mountPoint?: string, controllerPath?: string): string {
+    if (!mountPoint) return controllerPath || '';
+    if (!controllerPath || controllerPath === '') return mountPoint;
+
+    // 确保路径正确拼接
+    const cleanMountPoint = mountPoint.endsWith('/') ? mountPoint.slice(0, -1) : mountPoint;
+    const cleanControllerPath = controllerPath.startsWith('/') ? controllerPath : '/' + controllerPath;
+
+    return cleanMountPoint + cleanControllerPath;
+  }
+
+  private checkPathContainment(controllerName: string, newPath: string, hasMiddleware: boolean, middlewareCount: number) {
+    const existingPaths = Array.from(this.registeredPaths.entries());
+
+    for (const [existingPath, existingInfo] of existingPaths) {
+      // 检查路径包含关系
+      if (newPath.startsWith(existingPath + '/') || existingPath.startsWith(newPath + '/')) {
+        console.info(`
+ℹ️  Path Containment (Usually Safe):
+   - Existing: "${existingPath}" (${existingInfo.controller})
+   - New: "${newPath}" (${controllerName})
+
+   This is typically SAFE. Express routes to the most specific path.
+   Example: /order/extended/details goes to extended router, not base router.
+
+   📖 More info: https://github.com/nuecms/di/blob/main/docs/middleware-pollution-solutions.md#path-containment
+        `);
+      }
+    }
+  }
+
+  // 添加路径分析方法
+  getPathAnalysis(): { safe: string[], conflicts: string[], containments: string[] } {
+    const paths = Array.from(this.registeredPaths.keys());
+    const analysis = { safe: [], conflicts: [], containments: [] };
+
+    for (let i = 0; i < paths.length; i++) {
+      for (let j = i + 1; j < paths.length; j++) {
+        const path1 = paths[i];
+        const path2 = paths[j];
+
+        if (path1 === path2) {
+          analysis.conflicts.push(`${path1} (identical paths)`);
+        } else if (path1.startsWith(path2 + '/') || path2.startsWith(path1 + '/')) {
+          analysis.containments.push(`${path1} ↔ ${path2} (containment relationship)`);
+        } else {
+          analysis.safe.push(`${path1} ↔ ${path2} (completely separate)`);
         }
       }
     }
 
-    this.registeredPaths.set(path, {
-      controller: controllerName,
-      hasMiddleware,
-      middlewareCount
-    });
+    return analysis;
   }
 }
 

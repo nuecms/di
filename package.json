@@ -24,7 +24,10 @@
     "prepare": "husky install",
     "release": "release-it",
     "prepublishOnly": "pnpm run build",
-    "npm:pub": "pnpm publish --access public"
+    "npm:pub": "pnpm publish --access public",
+    "test:middleware": "tsx tests/test-nested-path-behavior.ts --auto-test",
+    "test:middleware-manual": "tsx tests/test-nested-path-behavior.ts",
+    "test:all": "pnpm run test && pnpm run test:middleware"
   },
   "repository": {
     "type": "git",
